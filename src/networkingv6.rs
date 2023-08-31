@@ -63,7 +63,7 @@ impl RoutingTable {
     }
 }
 
-#[test]
+// #[test]
 pub fn check_routing() {
     let my_routing_table = RoutingTable {
         name: "Krischal's router".into(),
@@ -80,4 +80,9 @@ pub fn check_routing() {
     println!("The next hop for {my_ip_addr:?} is {my_hop:?}");
     println!();
     println!("The best route for {my_ip_addr:?} is {my_best_route:#?}");
+}
+
+#[test]
+pub fn routing_works() {
+    check_routing();
 }
