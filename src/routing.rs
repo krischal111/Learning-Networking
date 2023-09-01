@@ -1,4 +1,5 @@
 use std::net::Ipv6Addr;
+use std::net::Ipv4Addr;
 
 use crate::bit_utils::popcount;
 
@@ -85,4 +86,51 @@ pub fn check_routing() {
 #[test]
 pub fn routing_works() {
     check_routing();
+}
+
+impl IpAddrTools for Ipv4Addr {
+    fn count_contiguous_ones(self) -> usize {
+        popcount::<u32>(self.into())
+    }
+    fn mask(self, mask:Self) -> Self {
+        let ip : u32 = self.into();
+        let mask : u32 = self.into();
+        let result = ip & mask;
+        return result.into();
+    }
+}
+
+#[derive(Debug)]
+pub struct RouteV4 {
+    pub destination : Ipv4Addr,
+    pub mask : Ipv4Addr,
+    pub next_hop : Ipv4Addr,
+}
+
+impl RouteV4 {
+    pub fn matches(&self, ipaddr : Ipv4Addr) -> bool {
+        ipaddr.mask(self.mask) == self.destination
+    }
+}
+
+#[derive(Debug)]
+struct RoutingTableV4 {
+    name : String,
+    table : Vec<RouteV4>,
+}
+
+impl RoutingTableV4 {
+    pub fn find_best_route(&self, ipaddr: Ipv4Addr) -> Option<&RouteV4> {
+        self.table
+            .iter()
+            .filter(|route| route.matches(ipaddr))
+            .max_by_key(|route| route.mask.count_contiguous_ones())
+    }
+    pub fn find_next_hop(&self, ipaddr : Ipv4Addr) -> Option<Ipv4Addr> {
+        if let Some(route) = self.find_best_route(ipaddr) {
+            return Some(route.next_hop);
+        } else {
+            return None;
+        }
+    }
 }
