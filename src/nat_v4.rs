@@ -1,3 +1,18 @@
+/// I have a question:
+///  If NAT looks into the TCP or UDP or any protocol header, then
+///  isn't it working in the 4th layer?
+/// -> My own answer is, it's just looking into it, (It shouldn't do even that)
+///    The real Layer 4 would not only look into it, but also modify it,
+///     it would be able to work in it, create it, talk to others, etc.
+/// 
+/// Further, this is a very crude implementation:
+/// A real router has 2^16 space for NAT: each one corresponding to a port
+///     -> this saves space for storing port, but allocates full space for all ports
+///       -> It probably also needs to know if the port is allcoated, so single bit could be used.
+/// The real reason that routers use that is, it gives indexing (Works in O(1) time), for the cost of just 64 thousand entries
+/// And since, they do not need to store port, they will store ipv4_addr and the port (32 + 16 bits) there.
+/// The router would have just a single ip-address they can give.
+/// The searching of next free port could take O(n) time, but it can easily be pipelined.
 use std::net::Ipv4Addr;
 use std::time::{Duration, Instant};
 
